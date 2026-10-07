@@ -1,0 +1,822 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>社群帳號健檢室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: 單欄快速診斷，手機優先；暖灰底＋灰白卡片，結論先行、少數字 */
+:root{
+  --bg:#E8E6E1; --surface:#FAF9F7; --sunk:#DFDCD6; --line:#D2CEC7;
+  --ink:#2E2C29; --muted:#7A766F; --accent:#4A4743; --accent-ink:#FAF9F7; --accent-soft:#EEECE8;
+  --mark:#B9AE9E; --mark-soft:#D9D3C9; --warn:#946A5B; --warn-soft:#EFE6E1;
+  --dark:#3A3835; --dark-ink:#F3F1ED;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1D1C1A; --surface:#272522; --sunk:#312F2B; --line:#3B3935;
+  --ink:#ECE9E4; --muted:#A39E96; --accent:#D8D3CB; --accent-ink:#1D1C1A; --accent-soft:#34322E;
+  --mark:#B9AE9E; --mark-soft:#4A453E; --warn:#D49E8A; --warn-soft:#3A2C27;
+  --dark:#E3DFD8; --dark-ink:#1D1C1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1D1C1A; --surface:#272522; --sunk:#312F2B; --line:#3B3935;
+  --ink:#ECE9E4; --muted:#A39E96; --accent:#D8D3CB; --accent-ink:#1D1C1A; --accent-soft:#34322E;
+  --mark:#B9AE9E; --mark-soft:#4A453E; --warn:#D49E8A; --warn-soft:#3A2C27;
+  --dark:#E3DFD8; --dark-ink:#1D1C1A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-weight:700;line-height:1.4;letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+p{margin:0}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:960px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{font-weight:700;font-size:18px;white-space:nowrap;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px}
+.brand i{width:9px;height:9px;border-radius:50%;background:var(--mark);box-shadow:0 0 0 4px var(--surface)}
+.nav{display:flex;gap:8px}
+.nav a{font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;padding:7px 14px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;white-space:nowrap;text-align:center;transition:border-color .15s}
+.nav a:hover{border-color:var(--ink)}
+.nav a.on{background:var(--dark);color:var(--dark-ink);border-color:var(--dark)}
+@media (max-width:680px){.top-in{flex-wrap:wrap;gap:10px}.nav{width:100%;gap:6px}.nav a{flex:1 1 0;padding:7px 2px;font-size:13px}}
+
+main{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+.view{display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.lead{color:var(--muted);font-size:14.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:0;cursor:pointer;font-weight:700;font-size:15px;text-decoration:none;transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn-p{background:var(--accent);color:var(--accent-ink)}
+.btn-p:hover{filter:brightness(1.08)}
+.btn-g{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-g:hover{border-color:var(--ink)}
+.btn-s{min-height:40px;font-size:14px;padding:0 18px}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn-wide{width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 180px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.panel h2{font-size:16px}
+
+/* Home */
+.hero{display:flex;flex-direction:column;gap:14px;padding-top:8px}
+.hero h1{font-size:clamp(22px,5.8vw,28px)}
+.hero h1.one{font-size:clamp(16px,5.3vw,26px);white-space:nowrap;letter-spacing:0}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--mark-soft) 62%)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px}
+.flow span{padding:3px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.flow b{color:var(--muted);font-weight:400}
+.flow span:last-child{background:var(--dark);color:var(--dark-ink);border-color:var(--dark)}
+.symptoms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.symptoms li{display:flex;gap:10px;padding:10px 0;border-top:1px dashed var(--line);font-size:14.5px}
+.symptoms li:first-child{border-top:0}
+.symptoms li::before{content:"";flex:none;width:16px;height:16px;margin-top:4px;border:1.5px solid var(--muted);border-radius:4px}
+.callout{font-size:16px;font-weight:700;border-left:3px solid var(--accent);padding-left:12px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:2px}
+.step .n{color:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.1em}
+.step h3{font-size:15px}
+.step p{color:var(--muted);font-size:13px}
+
+/* Quiz */
+.prog{display:flex;flex-direction:column;gap:8px}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted)}
+.prog-top b{color:var(--ink);font-size:14px;font-variant-numeric:tabular-nums}
+.bar{height:5px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.qcard h2{font-size:18px}
+.qhint{color:var(--muted);font-size:13.5px;margin-top:-8px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opts.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;padding:12px 14px;min-height:48px;font-size:14.5px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer;transition:border-color .15s,background .15s}
+.opts.grid .opt{min-height:56px;padding:10px 12px;font-weight:500;font-size:14px}
+.opt:hover{border-color:var(--muted)}
+.opt .dot{flex:none;width:18px;height:18px;border:2px solid var(--muted);border-radius:50%;display:grid;place-items:center}
+.opt.multi .dot{border-radius:5px}
+.opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-checked="true"] .dot{border-color:var(--accent);background:var(--accent)}
+.opt[aria-checked="true"] .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-ink)}
+.opt.multi[aria-checked="true"] .dot::after{width:4px;height:8px;border-radius:0;background:none;border:solid var(--accent-ink);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.opt[aria-disabled="true"]{opacity:.45}
+.qnav{display:flex;gap:10px;position:sticky;bottom:0;padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.qnav .btn-p{flex:1}
+.limit{font-size:12.5px;color:var(--muted);text-align:right;margin-top:-6px}
+
+/* Result */
+.verdict{background:var(--dark);color:var(--dark-ink);border-radius:var(--r);padding:22px 18px;display:flex;flex-direction:column;gap:10px}
+.verdict .eyebrow{color:var(--mark)}
+.verdict h1{font-size:clamp(18px,5vw,22px)}
+.verdict .chip{align-self:flex-start;font-size:12.5px;font-weight:700;padding:3px 12px;border-radius:999px;background:color-mix(in srgb,var(--dark-ink) 14%,transparent)}
+.verdict p{font-size:14px;opacity:.85}
+.status{font-size:15px;font-weight:500}
+.two{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:600px){.two{grid-template-columns:1fr 1fr}}
+.list{border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px}
+.list h3{font-size:14.5px}
+.list ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.list.good{background:var(--surface);border:1px solid var(--line)}
+.list.fix{background:var(--warn-soft)}
+.list.fix h3{color:var(--warn)}
+.prio{display:flex;flex-direction:column;gap:10px}
+.prio div{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.prio b{width:26px;height:26px;border-radius:50%;background:var(--dark);color:var(--dark-ink);display:grid;place-items:center;font-size:13px}
+.prio p{font-size:14.5px;font-weight:700;padding-top:2px}
+.risk{font-size:14px;color:var(--muted);padding-top:10px;border-top:1px dashed var(--line)}
+.dirs{display:flex;flex-wrap:wrap;gap:8px}
+.dirs span{padding:6px 14px;border-radius:999px;background:var(--bg);border:1.5px solid var(--line);font-weight:700;font-size:14px}
+.dirs span.first{background:var(--dark);color:var(--dark-ink);border-color:var(--dark)}
+.start{font-size:15px;font-weight:700}
+.cta{background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--r);padding:22px 18px;display:flex;flex-direction:column;gap:12px}
+.cta h2{font-size:18px}
+.cta ul{margin:0;padding-left:1.1em;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.redo{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:8px;font-size:13.5px;color:var(--muted)}
+.empty{text-align:center;align-items:center;padding:36px 16px}
+
+.scorebox{display:flex;align-items:flex-end;gap:14px;margin-top:4px}
+.scorebox .score{font-weight:900;font-size:clamp(38px,11vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.scorebox .score small{font-size:15px;font-weight:500;opacity:.6}
+.scorebox .lvl{display:flex;flex-direction:column;font-size:12.5px;opacity:.85;padding-bottom:4px}
+.scorebox .lvl b{font-size:16px;opacity:1}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.scale div{display:flex;flex-direction:column;gap:4px;font-size:11px;opacity:.55}
+.scale i{display:block;height:6px;border-radius:2px;background:color-mix(in srgb,var(--dark-ink) 22%,transparent)}
+.scale div.past i{background:color-mix(in srgb,var(--mark) 60%,transparent)}
+.scale div.on{opacity:1;font-weight:700}
+.scale div.on i{background:var(--mark)}
+.bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.bars li{display:grid;grid-template-columns:4.5em 1fr 2.2em;gap:10px;align-items:center;font-size:13.5px}
+.bars .t{height:8px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--muted);border-radius:99px}
+.bars li.low span:first-child{color:var(--warn);font-weight:700}
+.bars li.low .t i{background:var(--warn)}
+.bars b{text-align:right;font-variant-numeric:tabular-nums}
+.stack{display:flex;height:14px;border-radius:99px;overflow:hidden;gap:2px;background:var(--sunk)}
+.stack i{display:block;height:100%;background:var(--warn)}
+.legend{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 14px;font-size:13.5px}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend li i{width:10px;height:10px;border-radius:3px;background:var(--warn);flex:none}
+.legend b{margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* Contact */
+form{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-weight:700;font-size:14px}
+.field small{color:var(--muted);font-size:12.5px}
+.inp{width:100%;min-height:46px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);font-size:15px}
+.inp:focus{border-color:var(--accent);outline:none}
+textarea.inp{min-height:84px;resize:vertical}
+.err{color:var(--warn);font-size:13.5px}
+.attached{display:flex;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:12px 14px;font-size:13.5px}
+.attached b{font-size:14px}
+.attached .ok{flex:none;width:28px;height:28px;border-radius:50%;background:var(--dark);color:var(--dark-ink);display:grid;place-items:center;font-size:14px}
+.flow3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;counter-reset:f3}
+.flow3 li{font-size:12px;font-weight:700;color:var(--muted);padding-top:7px;border-top:3px solid var(--line);counter-increment:f3}
+.flow3 li::before{content:counter(f3) "．"}
+.flow3 li.on{color:var(--ink);border-color:var(--dark)}
+.flow3 li.done{border-color:var(--mark)}
+.done{text-align:center;align-items:center}
+.done .big{width:56px;height:56px;border-radius:50%;background:var(--dark);color:var(--dark-ink);display:grid;place-items:center;font-size:26px}
+.done h2{font-size:18px}
+.ostabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px}
+.ostabs button{flex:1;border:0;background:transparent;padding:7px 6px;border-radius:999px;font-weight:700;font-size:13.5px;cursor:pointer;color:var(--muted)}
+.ostabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.guide ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.tip{font-size:13px;color:var(--muted)}
+.tip b{color:var(--ink);user-select:all}
+.peek summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:2px 0}
+.peek textarea{margin-top:8px;min-height:220px;white-space:pre-wrap;font-size:13px}
+footer{max-width:640px;margin:0 auto;padding:22px 16px 36px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+.ft-lead{font-size:13px;color:var(--ink);font-weight:500}
+.ft-help{display:flex;flex-direction:column;gap:6px}
+.ft-h{font-size:12px;font-weight:700;letter-spacing:.12em}
+.ft-help details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 12px}
+.ft-help summary{cursor:pointer;padding:9px 0;font-size:13px;color:var(--ink);font-weight:500}
+.ft-help details p{padding:0 0 10px;font-size:12.5px}
+.ft-help b{color:var(--ink);user-select:all}
+.ft-legal{display:flex;flex-direction:column;gap:2px;font-size:11.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top"><div class="top-in">
+  <a class="brand" href="#home"><i></i><span id="brandName">社群帳號健檢室</span></a>
+  <nav class="nav" id="nav">
+    <a href="#health-check">免費健檢</a>
+    <a href="#result">洞察報告</a>
+    <a href="#direction">客製化方向</a>
+    <a href="#contact">預約諮詢</a>
+  </nav>
+</div></header>
+
+<main id="app"></main>
+<footer>
+  <p class="ft-lead">不是賣固定課程，而是先了解你的問題，再設計適合你的方式</p>
+  <div class="ft-help">
+    <span class="ft-h">小幫手</span>
+    <details><summary>健檢要花多久？</summary><p>10 題點選題，大約 2 分鐘，不用打字</p></details>
+    <details><summary>我的資料會被別人看到嗎？</summary><p>健檢結果只存在你這台裝置的瀏覽器中，只有你按下「送出我的健檢結果」並傳到 LINE，我才會看到</p></details>
+    <details><summary>換手機或清除瀏覽器後，結果不見了？</summary><p>結果只存在原本的裝置，重新做一次健檢就可以，大約 2 分鐘</p></details>
+    <details><summary>健檢結果準確嗎？</summary><p>健檢是依你的回答做的初步分析，方便快速看出方向，實際狀況會在諮詢時依你的帳號再一起確認</p></details>
+    <details><summary>按了送出，但 LINE 沒有收到？</summary><p>回到預約頁按「再複製一次」，再到 LINE 長按輸入框貼上送出，也可以直接搜尋官方帳號 <b id="ftLine"></b></p></details>
+  </div>
+  <div class="ft-legal">
+    <p>健檢結果僅供參考，不代表任何成效保證</p>
+    <p>本網站的文字內容、健檢題目與分析架構皆為原創，未經授權請勿轉載、複製或改作使用</p>
+    <p>© <span id="ftYear"></span> <span id="ftBrand"></span> 版權所有</p>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   1. 設定：之後串接真正服務時只需要改這裡
+   ========================================================= */
+const CONFIG = {
+  brandName: "社群帳號健檢室",
+  AI_ENDPOINT: "",     // AI 分析 API（留空＝使用內建分析）
+  LEAD_ENDPOINT: "",   // 預約資料送出（Google Sheets / Make / CRM webhook），留空＝複製文字傳 LINE
+  STORAGE_KEY: "smhc_v2",
+  LINE_URL: "https://lin.ee/79NyuM9",
+  LINE_ID: "@380vajdj",
+};
+
+/* AI Prompt：後端呼叫 AI 時使用，user 內容放 JSON */
+const AI_PROMPT = `你是一位專業的「自媒體內容策略顧問」
+請根據使用者的快速健檢回答，寫一段給顧問看的「客戶健檢洞察」，100～150 字
+內容包含：目前程度、最大卡點、可能原因、建議優先處理的方向
+請避免：過度誇張、制式化語言、直接推銷，使用者沒有提供的資訊不要自行捏造
+語氣：專業、直接、容易理解，用繁體中文，不要使用全形句號，句子之間用逗號
+只回傳 JSON：{"insight":""}`;
+
+/* =========================================================
+   2. 題目：10 題，全部用點選
+   ========================================================= */
+const Q = [
+  {id:"stage", type:"single", q:"你現在做自媒體到什麼程度？", hint:"選最接近的一個",
+   options:["還沒開始","剛開始，發過幾支","有在經營，但不穩定","穩定經營中","已經有接案或收入"]},
+  {id:"platform", type:"multi", q:"你主要經營哪個平台？", hint:"可以複選",
+   options:["Instagram","TikTok","YouTube","Facebook","Threads","小紅書","其他"]},
+  {id:"goal", type:"single", q:"你最想透過自媒體達成什麼？", hint:"選最主要的一個",
+   options:["漲粉、增加曝光","建立個人品牌","接業配","接案","賣商品或服務","發展副業","還不確定"]},
+  {id:"experience", type:"single", q:"經營多久了？",
+   options:["還沒開始","1～3 個月","3～6 個月","6～12 個月","1 年以上"]},
+  {id:"output", type:"single", q:"你現在的發文狀態是？",
+   options:["幾乎沒有發","想到才發","每週 1～2 支","每週 3 支以上"]},
+  {id:"positioning", type:"single", q:"你能一句話說出帳號在做什麼、給誰看嗎？",
+   options:["完全說不出來","有方向，但說不清楚","大概可以","很清楚"]},
+  {id:"stuck", type:"multi", max:3, grid:true, q:"你現在最卡在哪？", hint:"選最符合你的 1～3 個",
+   options:["定位不清楚","不知道拍什麼","影片沒人看","不知道怎麼寫腳本","不知道怎麼拍","剪輯很花時間","不知道怎麼經營","有內容但沒轉換","不知道怎麼變現","不知道問題在哪"]},
+  {id:"weakest", type:"single", q:"你覺得自己最不會的是哪一塊？",
+   options:["想主題","寫腳本","拍攝和鏡頭表現","剪輯","經營和看數據","變現和成交"]},
+  {id:"strength", type:"multi", max:2, q:"你覺得自己做得還不錯的是？", hint:"最多選 2 個",
+   options:["點子多、有想法","敢面對鏡頭","會拍，畫面好看","會剪輯","能穩定發文","懂自己的專業或產品","還在找"]},
+  {id:"wantHelp", type:"single", q:"你最希望有人幫你解決什麼？",
+   options:["幫我找到定位","幫我規劃要拍什麼","教我拍攝和剪輯","幫我看帳號哪裡有問題","幫我建立變現方式","想要整體陪跑"]},
+];
+
+/* =========================================================
+   3. 分析規則（只在背景計算，不顯示數字）
+   ========================================================= */
+const AREAS = {
+  positioning:{label:"定位", direction:"個人品牌定位",
+    headline:"你的問題不是不夠努力，而是帳號還沒有清楚的定位",
+    risk:"如果直接開始大量拍片，可能會繼續吸引到不精準的觀眾，粉絲多了也很難變成客戶",
+    prio:"先確定帳號要對誰說話、用一句話講清楚你的價值"},
+  content:{label:"內容方向", direction:"短影音內容企劃",
+    headline:"你的帳號不是沒有內容，而是內容方向還不夠集中",
+    risk:"如果繼續想到什麼拍什麼，可能會一直遇到內容分散、觀看不穩定的問題",
+    prio:"先把內容主題收斂成固定幾類，建立穩定的題目來源"},
+  script:{label:"腳本", direction:"腳本與拍攝",
+    headline:"你的影片不是不好，而是開頭留不住人、重點不夠清楚",
+    risk:"如果只是增加發文量，可能會繼續在前幾秒就被滑走，好內容也沒被看到",
+    prio:"先調整影片的開頭和結構，讓觀眾願意停下來看完"},
+  filming:{label:"拍攝", direction:"腳本與拍攝",
+    headline:"你其實有想法，卡住你的是拍攝和鏡頭表現",
+    risk:"如果一直卡在拍攝，可能會越拍越沒信心，產出也跟著停下來",
+    prio:"先建立一套簡單好上手的拍攝方式，讓拍片不再是負擔"},
+  editing:{label:"剪輯", direction:"帳號優化",
+    headline:"你的方向沒問題，但剪輯太花時間，拖慢了產出",
+    risk:"如果每支都花太多時間剪，很容易撐不久，帳號又停更",
+    prio:"先建立固定的剪輯流程和模板，把時間省下來"},
+  operation:{label:"經營", direction:"社群經營",
+    headline:"你有在做內容，但還不知道怎麼經營、怎麼判斷什麼有效",
+    risk:"如果沒有方法判斷成效，每支影片都像重新開始，很難越做越好",
+    prio:"先學會看懂帳號數據，知道下一支該怎麼調整"},
+  monetize:{label:"變現", direction:"內容變現",
+    headline:"你已經有內容，但還沒有把觀眾變成客戶的路徑",
+    risk:"如果只專注漲粉，可能會出現有人看、沒人買的狀況",
+    prio:"先設計從內容到私訊、成交的路徑"},
+};
+const AREA_ORDER = ["positioning","content","script","filming","editing","operation","monetize"];
+const STUCK_MAP = {
+  "定位不清楚":{positioning:3}, "不知道拍什麼":{content:3}, "影片沒人看":{script:2,operation:1},
+  "不知道怎麼寫腳本":{script:3}, "不知道怎麼拍":{filming:3}, "剪輯很花時間":{editing:3},
+  "不知道怎麼經營":{operation:3}, "有內容但沒轉換":{monetize:3}, "不知道怎麼變現":{monetize:3},
+  "不知道問題在哪":{positioning:2,content:1},
+};
+const STUCK_TEXT = {
+  "定位不清楚":"帳號定位還不清楚，觀眾不知道你在做什麼",
+  "不知道拍什麼":"沒有穩定的題目來源，常常不知道要拍什麼",
+  "影片沒人看":"影片觀看數低，內容沒有被推送出去",
+  "不知道怎麼寫腳本":"沒有腳本架構，影片節奏和重點不穩定",
+  "不知道怎麼拍":"拍攝和鏡頭表現還沒有把握",
+  "剪輯很花時間":"剪輯太花時間，影響產出速度",
+  "不知道怎麼經營":"不清楚怎麼經營帳號、判斷成效",
+  "有內容但沒轉換":"有人看，但沒有轉成詢問或客戶",
+  "不知道怎麼變現":"還沒有清楚的變現方式",
+  "不知道問題在哪":"不確定問題出在哪，只能一直嘗試",
+};
+const WEAKEST_MAP = {"想主題":"content","寫腳本":"script","拍攝和鏡頭表現":"filming","剪輯":"editing","經營和看數據":"operation","變現和成交":"monetize"};
+const HELP_MAP = {"幫我找到定位":"positioning","幫我規劃要拍什麼":"content","教我拍攝和剪輯":"filming","幫我看帳號哪裡有問題":"operation","幫我建立變現方式":"monetize"};
+const STRENGTH_MAP = {
+  "點子多、有想法":{text:"點子多，有源源不絕的想法", area:"content"},
+  "敢面對鏡頭":{text:"敢面對鏡頭，這是很多人最難跨過的一步", area:"filming"},
+  "會拍，畫面好看":{text:"拍攝能力不錯，畫面有質感", area:"filming"},
+  "會剪輯":{text:"有剪輯能力，可以自己完成影片", area:"editing"},
+  "能穩定發文":{text:"能穩定發文，已經有持續產出的習慣", area:"content"},
+  "懂自己的專業或產品":{text:"懂自己的專業，內容有真材實料", area:"positioning"},
+};
+const STAGES = {
+  "還沒開始":{tag:"起步期", status:"你還在起跑線前，最需要的是先想清楚方向，而不是急著開拍"},
+  "剛開始，發過幾支":{tag:"摸索期", status:"你已經踏出第一步，但還在摸索要拍什麼、怎麼拍"},
+  "有在經營，但不穩定":{tag:"調整期", status:"你的帳號不是沒有內容，而是方向和節奏還不夠穩定"},
+  "穩定經營中":{tag:"優化期", status:"你已經有穩定產出，現在需要的是讓每支內容更有效"},
+  "已經有接案或收入":{tag:"放大期", status:"你已經能用內容帶來收入，下一步是把成果系統化、放大"},
+};
+
+const LEVELS = [
+  {max:40, name:"起步期"},{max:55, name:"摸索期"},{max:70, name:"調整期"},{max:82, name:"優化期"},{max:101, name:"放大期"},
+];
+
+/* 資料結構（存在 localStorage） */
+const emptyReport = () => ({
+  platform:[], goal:"", experience:"", stage:"", stageTag:"", output:"", positioningClarity:"",
+  currentProblems:[], strengths:[], weaknesses:[], mainIssue:"", mainIssueKey:"", secondIssueKey:"",
+  headline:"", status:"", priorities:[], risk:"",
+  recommendedDirection:[], startWith:"", wantHelp:"",
+  insightReport:"", insightSource:"", issueScores:{}, areaScores:{}, issueShare:{}, totalScore:0, level:"", completedAt:"",
+});
+
+function analyze(a){
+  const r = emptyReport();
+  r.platform = a.platform||[]; r.goal = a.goal||""; r.experience = a.experience||"";
+  r.stage = a.stage||""; r.output = a.output||""; r.positioningClarity = a.positioning||""; r.wantHelp = a.wantHelp||"";
+  const st = STAGES[r.stage] || STAGES["剛開始，發過幾支"];
+  r.stageTag = st.tag; r.status = st.status;
+
+  // 背景計分：分數越高＝越需要處理
+  const s = Object.fromEntries(AREA_ORDER.map(k=>[k,0]));
+  const add = (k,v)=>{ s[k]+=v; };
+  (a.stuck||[]).forEach(o=>Object.entries(STUCK_MAP[o]||{}).forEach(([k,v])=>add(k,v)));
+  if(WEAKEST_MAP[a.weakest]) add(WEAKEST_MAP[a.weakest],2);
+  if(HELP_MAP[a.wantHelp]) add(HELP_MAP[a.wantHelp],1);
+  if(a.wantHelp==="教我拍攝和剪輯") add("editing",1);
+  add("positioning", {"完全說不出來":3,"有方向，但說不清楚":2,"大概可以":1}[a.positioning]||0);
+  if(["幾乎沒有發","想到才發"].includes(a.output)) add("content",2);
+  if(["接案","賣商品或服務","接業配"].includes(a.goal) && ["穩定經營中","已經有接案或收入"].includes(a.stage)) add("monetize",1);
+  (a.strength||[]).forEach(o=>{ const m = STRENGTH_MAP[o]; if(m) add(m.area,-1); });
+  r.issueScores = s;
+
+  // 分數：每一項 0～100（越高越好），總分＝平均
+  const bonus = {"還沒開始":-15,"剛開始，發過幾支":-5,"有在經營，但不穩定":0,"穩定經營中":8,"已經有接案或收入":12}[r.stage]||0;
+  r.areaScores = Object.fromEntries(AREA_ORDER.map(k=>[k, Math.max(15, Math.min(95, Math.round(80 - s[k]*10 + bonus)))]));
+  r.totalScore = Math.round(AREA_ORDER.reduce((t,k)=>t+r.areaScores[k],0)/AREA_ORDER.length);
+  const lv = LEVELS.find(l=>r.totalScore<l.max);
+  r.level = lv.name; r.stageTag = lv.name;
+  // 卡點佔比：問題集中在哪裡
+  const pos = AREA_ORDER.filter(k=>s[k]>0), sum = pos.reduce((t,k)=>t+s[k],0);
+  let share = Object.fromEntries(pos.map(k=>[k, Math.round(s[k]/sum*100)]));
+  const diff = 100 - Object.values(share).reduce((t,v)=>t+v,0);
+  if(pos.length && diff){ const top = pos.sort((x,y)=>s[y]-s[x])[0]; share[top]+=diff; }
+  r.issueShare = share;
+
+  const ranked = [...AREA_ORDER].sort((x,y)=>s[y]-s[x] || AREA_ORDER.indexOf(x)-AREA_ORDER.indexOf(y));
+  const [main, second] = ranked;
+  r.mainIssueKey = main;
+  r.secondIssueKey = s[main]-s[second]<=2 && s[second]>0 ? second : "";
+  const least = [...AREA_ORDER].reverse().sort((x,y)=>s[x]-s[y])[0];
+
+  // 一句話洞察
+  if(r.secondIssueKey){
+    r.headline = `你最大的問題不是${AREAS[least].label}，而是${AREAS[main].label}與${AREAS[second].label}`;
+    r.mainIssue = `${AREAS[main].label}與${AREAS[second].label}`;
+  }else{
+    r.headline = AREAS[main].headline;
+    r.mainIssue = AREAS[main].label;
+  }
+  r.risk = AREAS[main].risk;
+
+  // 目前卡點（2～3 個，來自使用者自己點選）
+  r.currentProblems = (a.stuck||[]).slice();
+  r.weaknesses = (a.stuck||[]).map(o=>STUCK_TEXT[o]).filter(Boolean);
+  if(["幾乎沒有發","想到才發"].includes(a.output)) r.weaknesses.push("發文頻率不穩定，觀眾和演算法都記不住你");
+  if(["完全說不出來","有方向，但說不清楚"].includes(a.positioning) && !(a.stuck||[]).includes("定位不清楚")) r.weaknesses.push("還說不清楚帳號在做什麼、給誰看");
+  const WEAK_TEXT = {positioning:"帳號定位還可以更聚焦",content:"內容主題還不夠集中",script:"影片開頭和結構還不夠抓人",filming:"拍攝和鏡頭表現還不夠穩定",editing:"剪輯流程太花時間",operation:"還沒有用數據判斷內容成效",monetize:"還沒有從內容到成交的路徑"};
+  [main, second, WEAKEST_MAP[a.weakest]].forEach(k=>{ if(k && r.weaknesses.length<2) r.weaknesses.push(WEAK_TEXT[k]); });
+  r.weaknesses = [...new Set(r.weaknesses)].slice(0,3);
+
+  // 優勢（2～3 個）
+  r.strengths = (a.strength||[]).map(o=>STRENGTH_MAP[o]&&STRENGTH_MAP[o].text).filter(Boolean);
+  if(["穩定經營中","已經有接案或收入"].includes(r.stage) && !r.strengths.some(t=>t.includes("穩定"))) r.strengths.push("已經有實際經營的經驗");
+  if(["每週 1～2 支","每週 3 支以上"].includes(a.output) && !r.strengths.some(t=>t.includes("穩定"))) r.strengths.push("有固定產出的習慣");
+  if(["大概可以","很清楚"].includes(a.positioning)) r.strengths.push("對帳號方向已經有想法");
+  if(r.goal && r.goal!=="還不確定") r.strengths.push(`目標明確，知道自己想要${r.goal.replace("、增加曝光","")}`);
+  if(r.strengths.length<2) r.strengths.push("願意先停下來檢視問題，而不是盲目做下去");
+  r.strengths = [...new Set(r.strengths)].slice(0,3);
+
+  // 最需要優先處理（1～2 個）
+  r.priorities = [AREAS[main].prio];
+  if(r.secondIssueKey) r.priorities.push(AREAS[second].prio);
+
+  // 客製化方向
+  const focus = ranked.filter(k=>s[k]>0).slice(0,3);
+  if(!focus.length) focus.push(main);
+  const seq = ["positioning","content","script","filming","operation","editing","monetize"];
+  const ordered = seq.filter(k=>focus.includes(k));
+  let dirs = [...new Set(ordered.map(k=>AREAS[k].direction))];
+  if((a.stuck||[]).includes("影片沒人看") && !dirs.includes("帳號優化")) dirs.push("帳號優化");
+  r.recommendedDirection = dirs.slice(0,3);
+  const firstTwo = r.recommendedDirection.slice(0,2);
+  r.startWith = r.recommendedDirection.length>2
+    ? `建議先從「${firstTwo.join("＋")}」開始，再進入「${r.recommendedDirection[2]}」`
+    : r.recommendedDirection.length===2
+      ? `建議先從「${firstTwo[0]}」開始，再進入「${firstTwo[1]}」`
+      : `建議先從「${firstTwo[0]}」開始`;
+
+  r.completedAt = new Date().toISOString();
+  return r;
+}
+
+/* AI 洞察（給顧問看的完整分析） */
+const noPeriod = t=>String(t).replace(/。(?=\S)/g,"，").replace(/。/g,"");
+async function generateInsight(r){
+  if(CONFIG.AI_ENDPOINT){
+    try{
+      const res = await fetch(CONFIG.AI_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({prompt:AI_PROMPT, data:{answers:state.answers, report:r}})});
+      if(!res.ok) throw new Error(res.status);
+      const j = await res.json();
+      return {text:noPeriod(j.insight||j.text||""), source:"ai"};
+    }catch(e){ console.warn("AI API 失敗，改用內建分析", e); }
+  }
+  return {text:mockInsight(r), source:"mock"};
+}
+function mockInsight(r){
+  const plat = r.platform.length ? r.platform.join("、") : "社群平台";
+  const goal = r.goal && r.goal!=="還不確定" ? `目標是${r.goal}` : "目前還不確定目標";
+  const exp = r.experience==="還沒開始" ? "還沒開始經營" : `經營 ${r.experience}`;
+  const help = r.wantHelp ? `，本人最希望的是「${r.wantHelp}」` : "";
+  return `客戶主要經營 ${plat}，${exp}，${goal}，目前處於${r.stageTag}，最大的卡點在${r.mainIssue}，自己點選的問題包含${r.currentProblems.join("、")||"未選"}${help}，建議諮詢時先釐清${AREAS[r.mainIssueKey].label}，再依序處理${r.recommendedDirection.join("、")}，對方已有的優勢是${r.strengths[0]||"有經營意願"}，可以從這裡建立信心`;
+}
+
+/* 給顧問的客戶洞察摘要 */
+function buildSummary(){
+  const r = state.report, L = state.lead||{};
+  const n = arr=>arr.length ? arr.map((t,i)=>`${i+1}. ${t}`).join("\n") : "（無）";
+  const lines = [
+    `【客戶基本資料】`,
+    `姓名：${L.name||""}`,
+    `LINE：${L.line||""}`,
+    `Email：${L.email||""}`,
+    `社群帳號：${L.social||""}`,
+  ];
+  if(r){
+    lines.push(
+      `平台：${r.platform.join("、")}`,
+      `經營時間：${r.experience}`,
+      `主要目標：${r.goal}`,
+      `目前程度：${r.stageTag}（${r.stage}）`,
+      `發文狀態：${r.output}`,
+      `最想解決：${L.problem||r.wantHelp||""}`,
+      ``,`【健檢分數】`,
+      `總分：${r.totalScore}／100（${r.level}）`,
+      AREA_ORDER.map(k=>`${AREAS[k].label} ${r.areaScores[k]}`).join("、"),
+      `卡點佔比：${shareList(r).map(x=>`${x.label} ${x.pct}%`).join("、")||"無明顯卡點"}`,
+      ``,`【目前狀態】`, r.status,
+      ``,`【主要卡點】`, r.headline,
+      ``,`【主要問題】`, n(r.weaknesses),
+      ``,`【目前優勢】`, n(r.strengths),
+      ``,`【最適合的客製化方向】`, n(r.recommendedDirection),
+      ``,`【建議優先處理】`, r.priorities.join("，"),
+      ``,`【完整健檢洞察】`, r.insightReport || mockInsight(r));
+  }else{
+    lines.push(`最想解決：${L.problem||""}`, ``, `（尚未完成健檢）`);
+  }
+  return lines.join("\n");
+}
+
+function shareList(r){
+  return Object.entries(r.issueShare||{}).sort((a,b)=>b[1]-a[1]).map(([k,pct])=>({key:k, label:AREAS[k].label, pct}));
+}
+
+/* 預約資料送出：設定 LEAD_ENDPOINT 後會直接送到你的表單／CRM */
+async function submitLead(lead){
+  const payload = {lead, report:state.report, answers:state.answers, summary:buildSummary(), submittedAt:new Date().toISOString()};
+  if(!CONFIG.LEAD_ENDPOINT) return false;
+  const res = await fetch(CONFIG.LEAD_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  if(!res.ok) throw new Error("送出失敗");
+  return true;
+}
+
+/* =========================================================
+   4. 狀態
+   ========================================================= */
+let state = { answers:{}, step:0, report:null, lead:null };
+function load(){ try{ const s = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY)||"null"); if(s) state = Object.assign(state,s); }catch(e){} }
+function save(){ try{ localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+
+/* =========================================================
+   5. 畫面
+   ========================================================= */
+const app = document.getElementById("app");
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ROUTES = {home:viewHome, "health-check":viewQuiz, result:viewResult, direction:()=>viewResult("direction"), contact:viewContact};
+
+function route(){
+  const key = (location.hash||"#home").slice(1);
+  (ROUTES[key]||viewHome)();
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+key));
+  if(key!=="direction") window.scrollTo({top:0});
+}
+function go(k){ if(location.hash==="#"+k) route(); else location.hash=k; }
+
+function viewHome(){
+  const has = !!state.report;
+  app.innerHTML = `<div class="view">
+  <section class="hero">
+    <span class="eyebrow">免費帳號健檢・約 2 分鐘</span>
+    <h1 class="one">你的社群帳號，<em>到底卡在哪裡？</em></h1>
+    <p class="lead">回答 10 個點選題，馬上看到你的帳號分數、卡點佔比和適合你的方向，不用打字</p>
+    <div class="flow" aria-label="自媒體成長路徑"><span>定位</span><b>→</b><span>內容</span><b>→</b><span>拍攝</span><b>→</b><span>剪輯</span><b>→</b><span>社群</span><b>→</b><span>變現</span></div>
+    <div class="row" style="margin-top:4px">
+      ${has ? `<button class="btn btn-p" onclick="go('contact')">預約客製化諮詢</button><button class="btn btn-g" onclick="startQuiz()">重新健檢</button>`
+            : `<button class="btn btn-p" onclick="startQuiz()">開始免費健檢</button>`}
+    </div>
+  </section>
+  <section class="panel">
+    <span class="eyebrow">你是不是也這樣</span>
+    <h2 style="font-size:17px">很多人不是不努力，而是學錯東西</h2>
+    <ul class="symptoms">
+      <li>每天發文，但不知道為什麼沒人看</li>
+      <li>知道要經營 IG，卻不知道自己的定位</li>
+      <li>有想法，卻不知道怎麼變成短影音</li>
+      <li>買了一堆課，最後還是不知道怎麼執行</li>
+    </ul>
+    <p class="callout">所以先不決定你要上什麼課，而是先找出你卡在哪裡</p>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <span class="eyebrow">健檢怎麼進行</span>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 1</span><h3>點選 10 題</h3><p>不用打字，選最符合你的</p></div>
+      <div class="step"><span class="n">STEP 2</span><h3>看洞察報告</h3><p>分數、程度和卡點一次看懂</p></div>
+      <div class="step"><span class="n">STEP 3</span><h3>預約諮詢</h3><p>依你的狀況一起拆解</p></div>
+    </div>
+  </section>
+  ${has?"":`<button class="btn btn-p btn-wide" onclick="startQuiz()">開始免費健檢</button>`}
+  </div>`;
+}
+
+function startQuiz(){ state.answers={}; state.step=0; state.report=null; save(); go("health-check"); }
+
+function viewQuiz(){
+  const N = Q.length;
+  if(state.step>=N) state.step=N-1;
+  const q = Q[state.step], a = state.answers[q.id];
+  const last = state.step===N-1;
+  const sel = q.type==="multi" ? (a||[]) : null;
+  const opts = q.options.map(o=>{
+    const on = q.type==="multi" ? sel.includes(o) : a===o;
+    const full = q.type==="multi" && q.max && sel.length>=q.max && !on;
+    return `<button type="button" class="opt ${q.type==="multi"?"multi":""}" role="${q.type==="multi"?"checkbox":"radio"}" aria-checked="${on}" aria-disabled="${full}" data-v="${esc(o)}"><span class="dot"></span><span>${esc(o)}</span></button>`;
+  }).join("");
+  app.innerHTML = `<div class="view">
+    <div class="prog">
+      <div class="prog-top"><span>快速診斷</span><b>第 ${state.step+1} 題／${N} 題</b></div>
+      <div class="bar"><i style="width:${(state.step+1)/N*100}%"></i></div>
+    </div>
+    <section class="qcard">
+      <h2>${esc(q.q)}</h2>
+      ${q.hint?`<p class="qhint">${esc(q.hint)}</p>`:""}
+      <div class="opts ${q.grid?"grid":""}" role="${q.type==="multi"?"group":"radiogroup"}">${opts}</div>
+      ${q.max?`<p class="limit" id="limit">已選 ${sel.length}／${q.max}</p>`:""}
+    </section>
+    <div class="qnav">
+      <button class="btn btn-g" id="prev" ${state.step===0?"disabled":""}>上一題</button>
+      <button class="btn btn-p" id="next">${last?"看我的洞察報告":"下一題"}</button>
+    </div>
+  </div>`;
+
+  const next = document.getElementById("next");
+  const refresh = ()=>{ const v = state.answers[q.id]; next.disabled = Array.isArray(v) ? !v.length : !v; };
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const v = b.dataset.v;
+    if(q.type==="multi"){
+      const s = new Set(state.answers[q.id]||[]);
+      if(s.has(v)) s.delete(v);
+      else{
+        if(q.max && s.size>=q.max) return;
+        if(v==="還在找"||v==="都還沒有") s.clear(); else s.delete("還在找");
+        s.add(v);
+      }
+      state.answers[q.id]=[...s]; save(); viewQuiz(); return;
+    }
+    state.answers[q.id]=v; save();
+    app.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-checked", x===b));
+    refresh();
+  });
+  document.getElementById("prev").onclick=()=>{ state.step--; save(); viewQuiz(); };
+  next.onclick=()=>{ if(last) finishQuiz(); else { state.step++; save(); viewQuiz(); window.scrollTo({top:0}); } };
+  refresh();
+}
+
+function finishQuiz(){
+  const r = analyze(state.answers);
+  state.report = r; save();
+  generateInsight(r).then(res=>{ if(state.report===r){ r.insightReport = res.text; r.insightSource = res.source; save(); } });
+  go("result");
+}
+
+function loadSample(){
+  state.answers = {stage:"有在經營，但不穩定",platform:["Instagram","Threads"],goal:"建立個人品牌",experience:"6～12 個月",
+    output:"想到才發",positioning:"有方向，但說不清楚",stuck:["定位不清楚","不知道拍什麼","影片沒人看"],
+    weakest:"想主題",strength:["敢面對鏡頭","懂自己的專業或產品"],wantHelp:"幫我找到定位"};
+  finishQuiz();
+}
+
+function viewResult(scrollTo){
+  const r = state.report;
+  if(!r){
+    app.innerHTML = `<div class="view"><div class="panel empty">
+      <span class="eyebrow">還沒有洞察報告</span>
+      <h2 style="font-size:18px">先做 2 分鐘健檢，報告會直接出現在這裡</h2>
+      <div class="row" style="width:100%"><button class="btn btn-p" onclick="startQuiz()">開始免費健檢</button><button class="btn btn-g" onclick="loadSample()">先看範例報告</button></div>
+    </div></div>`; return;
+  }
+  app.innerHTML = `<div class="view">
+    <section class="verdict">
+      <span class="eyebrow">你的自媒體洞察報告</span>
+      <h1>${esc(r.headline)}</h1>
+      <div class="scorebox">
+        <div class="score">${r.totalScore}<small>／100</small></div>
+        <div class="lvl"><span>帳號健康分數・目前在</span><b>${esc(r.level)}</b></div>
+      </div>
+      <div class="scale">${LEVELS.map(l=>`<div class="${l.name===r.level?"on":LEVELS.indexOf(l)<LEVELS.findIndex(x=>x.name===r.level)?"past":""}"><i></i><span>${l.name.replace("期","")}</span></div>`).join("")}</div>
+    </section>
+
+    <section class="panel">
+      <span class="eyebrow">七項能力分數</span>
+      <ul class="bars">${AREA_ORDER.map(k=>{ const v = r.areaScores[k]; return `<li class="${v<50?"low":""}"><span>${AREAS[k].label}</span><span class="t"><i style="width:${v}%"></i></span><b>${v}</b></li>`; }).join("")}</ul>
+      <p class="tip">分數越高代表越沒問題，低於 50 分的項目是你目前最需要注意的地方</p>
+    </section>
+
+    ${shareList(r).length?`<section class="panel">
+      <span class="eyebrow">卡點佔比</span>
+      <h2>你的問題有 ${shareList(r)[0].pct}% 集中在「${esc(shareList(r)[0].label)}」</h2>
+      <div class="stack">${shareList(r).map((x,i)=>`<i style="width:${x.pct}%;opacity:${Math.max(.25,1-i*.22)}" title="${esc(x.label)} ${x.pct}%"></i>`).join("")}</div>
+      <ul class="legend">${shareList(r).map((x,i)=>`<li><i style="opacity:${Math.max(.25,1-i*.22)}"></i>${esc(x.label)}<b>${x.pct}%</b></li>`).join("")}</ul>
+    </section>`:""}
+
+    <section class="panel">
+      <span class="eyebrow">目前狀態</span>
+      <p class="status">${esc(r.status)}</p>
+    </section>
+
+    <div class="two">
+      <div class="list good"><h3>你的優勢</h3><ul>${r.strengths.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+      <div class="list fix"><h3>目前卡點</h3><ul>${r.weaknesses.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>
+    </div>
+
+    <section class="panel">
+      <span class="eyebrow">最需要優先處理</span>
+      <div class="prio">${r.priorities.map((p,i)=>`<div><b>${i+1}</b><p>${esc(p)}</p></div>`).join("")}</div>
+      <p class="risk">${esc(r.risk)}</p>
+    </section>
+
+    <section class="panel" id="direction-sec">
+      <span class="eyebrow">你的客製化方向</span>
+      <div class="dirs">${r.recommendedDirection.map((d,i)=>`<span class="${i===0?"first":""}">${esc(d)}</span>`).join("")}</div>
+      <p class="start">${esc(r.startWith)}</p>
+      <p class="lead">不是每個人都需要上同樣的課，順序對了，學的東西才用得上</p>
+    </section>
+
+    <section class="cta">
+      <h2>想知道你的帳號應該怎麼調整？</h2>
+      <p class="lead">預約客製化諮詢，我會依照你的狀況進一步拆解</p>
+      <ul><li>你的帳號定位該怎麼調整</li><li>接下來該拍什麼、怎麼拍</li><li>最適合你的學習順序和方式</li></ul>
+      <button class="btn btn-p btn-wide" onclick="go('contact')">預約客製化諮詢</button>
+    </section>
+
+    <div class="redo">想換一組答案重新看看？<button class="btn btn-g btn-s" onclick="startQuiz()">重新健檢</button></div>
+  </div>`;
+  if(scrollTo==="direction") setTimeout(()=>document.getElementById("direction-sec").scrollIntoView({behavior:"smooth",block:"start"}),30);
+}
+
+function viewContact(){
+  if(state.lead && state.lead.sent) return viewSent(state.lead.copied!==false);
+  const r = state.report, L = state.lead||{};
+  app.innerHTML = `<div class="view">
+    <section class="hero"><span class="eyebrow">預約客製化諮詢</span><h1>留下聯絡方式</h1>
+      <p class="lead">${r?"如果你想知道自己的帳號到底該怎麼調整，留下資料，我會依照你的健檢結果跟你聯繫":"還沒做健檢也可以預約，先做健檢能讓諮詢更有效率"}</p></section>
+    <ol class="flow3"><li class="on">填寫資料</li><li>送出健檢結果</li><li>貼到 LINE 給我</li></ol>
+    <form class="panel" id="f" novalidate>
+      ${r?`<div class="attached"><span class="ok">✓</span><div><b>你的洞察報告會一起送出</b><br>${esc(r.stageTag)}・主要卡在${esc(r.mainIssue)}</div></div>`
+         :`<button type="button" class="btn btn-g" onclick="startQuiz()">先做 2 分鐘健檢</button>`}
+      <div class="field"><label for="c-name">姓名 *</label><input class="inp" id="c-name" autocomplete="name" value="${esc(L.name)}"></div>
+      <div class="field"><label for="c-line">LINE ID</label><input class="inp" id="c-line" value="${esc(L.line)}"></div>
+      <div class="field"><label for="c-email">Email</label><input class="inp" id="c-email" type="email" inputmode="email" autocomplete="email" value="${esc(L.email)}"><small>LINE ID 或 Email 至少填一個</small></div>
+      <div class="field"><label for="c-social">Instagram／社群帳號</label><input class="inp" id="c-social" placeholder="@yourname" value="${esc(L.social)}"></div>
+      <div class="field"><label for="c-problem">最想解決的問題</label><textarea class="inp" id="c-problem" placeholder="可以不填">${esc(L.problem ?? (r?r.wantHelp:""))}</textarea></div>
+      <p class="err" id="c-err" hidden></p>
+      <button class="btn btn-p" type="submit">送出我的健檢結果</button>
+    </form>
+  </div>`;
+  const f = document.getElementById("f");
+  const collect = ()=>({ name:val("c-name"), line:val("c-line"), email:val("c-email"), social:val("c-social"), problem:val("c-problem") });
+  f.oninput = ()=>{ state.lead = collect(); save(); };
+  f.onsubmit = e=>{
+    e.preventDefault();
+    const lead = collect(), err = document.getElementById("c-err");
+    let msg = "";
+    if(!lead.name) msg = "請填寫姓名";
+    else if(!lead.line && !lead.email) msg = "請留下 LINE ID 或 Email，才能聯絡你";
+    else if(lead.email && !/^\S+@\S+\.\S+$/.test(lead.email)) msg = "Email 格式看起來不太對，請再確認一次";
+    if(msg){ err.textContent = msg; err.hidden = false; return; }
+    err.hidden = true;
+    state.lead = {...lead, sent:true}; save();
+    const text = buildSummary();
+    // 有設定表單網址就直接送出；沒有就複製文字傳 LINE
+    if(CONFIG.LEAD_ENDPOINT){
+      submitLead(lead).then(()=>{ state.lead.direct=true; save(); viewSent(true); }).catch(()=>copyThen(text));
+    }else copyThen(text);
+  };
+}
+function copyThen(text){
+  const p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject();
+  p.then(()=>{ state.lead.copied=true; save(); viewSent(true); }).catch(()=>{ state.lead.copied=false; save(); viewSent(false); });
+}
+const val = id=>document.getElementById(id).value.trim();
+
+const GUIDES = {
+  ios:{label:"iPhone", steps:["點「打開 LINE 傳給我」","在聊天室長按輸入框，選「貼上」","按送出就完成了"]},
+  android:{label:"Android", steps:["點「打開 LINE 傳給我」","在聊天室長按輸入框，選「貼上」","按送出就完成了"]},
+  pc:{label:"電腦", steps:["點「打開 LINE 傳給我」或打開 LINE 電腦版","在輸入框按 Ctrl+V（Mac 按 ⌘+V）","按 Enter 送出就完成了"]},
+};
+function detectOS(){
+  const ua = navigator.userAgent||"";
+  if(/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints>1)) return "ios";
+  if(/Android/i.test(ua)) return "android";
+  return "pc";
+}
+let currentOS = null;
+function viewSent(copied){
+  const L = state.lead||{};
+  if(L.direct){
+    app.innerHTML = `<div class="view"><section class="panel done">
+      <div class="big">✓</div><h2>收到！你的健檢資料已送出</h2>
+      <p class="lead">接下來會依照你的狀況，進一步討論適合你的課程方式</p>
+      <button class="btn btn-g" onclick="state.lead.sent=false;save();viewContact()">修改資料</button></section></div>`; return;
+  }
+  const text = buildSummary();
+  if(!currentOS) currentOS = detectOS();
+  app.innerHTML = `<div class="view">
+    <ol class="flow3"><li class="done">填寫資料</li><li class="${copied?"done":"on"}">送出健檢結果</li><li class="on">貼到 LINE 給我</li></ol>
+    <section class="panel done">
+      <div class="big">✓</div>
+      <h2>${copied?"已複製！最後一步，貼到 LINE 傳給我":"請先按「複製我的資料」"}</h2>
+      <p class="lead" id="sentMsg">${copied?"你的資料和健檢結果已經複製好了，貼上送出後，我會依照你的狀況跟你討論適合的方式":"自動複製沒有成功，按下方按鈕再試一次"}</p>
+      <a class="btn btn-p btn-wide" href="${esc(CONFIG.LINE_URL)}" target="_blank" rel="noopener">打開 LINE 傳給我</a>
+      <button class="btn btn-g btn-wide" id="recopy">${copied?"再複製一次":"複製我的資料"}</button>
+      <p class="tip">LINE 官方帳號 <b>${esc(CONFIG.LINE_ID)}</b></p>
+    </section>
+    <section class="panel">
+      <div class="ostabs" role="tablist">${Object.entries(GUIDES).map(([k,g])=>`<button type="button" role="tab" data-os="${k}" aria-selected="${k===currentOS}">${g.label}</button>`).join("")}</div>
+      <div class="guide" id="guide"></div>
+      <details class="peek"><summary>看看要傳出的內容</summary><textarea class="inp" id="sendText" readonly>${esc(text)}</textarea></details>
+    </section>
+    <div class="row"><button class="btn btn-g" id="editLead">修改資料</button><button class="btn btn-g" onclick="go('result')">回到洞察報告</button></div>
+  </div>`;
+  const msg = document.getElementById("sentMsg"), ta = document.getElementById("sendText");
+  const render = ()=>{
+    document.getElementById("guide").innerHTML = `<ol>${GUIDES[currentOS].steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol>`;
+    app.querySelectorAll(".ostabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.os===currentOS));
+  };
+  app.querySelectorAll(".ostabs button").forEach(b=>b.onclick=()=>{ currentOS=b.dataset.os; render(); });
+  render();
+  document.getElementById("editLead").onclick = ()=>{ state.lead.sent=false; save(); viewContact(); };
+  document.getElementById("recopy").onclick = ()=>{
+    navigator.clipboard.writeText(buildSummary()).then(()=>{ state.lead.copied=true; save(); msg.textContent = "已複製，打開 LINE 貼上送出就完成了"; })
+    .catch(()=>{ ta.closest("details").open = true; ta.focus(); ta.select(); msg.textContent = "請在下方文字長按全選後複製（電腦按 Ctrl+C）"; });
+  };
+}
+
+/* 啟動 */
+document.getElementById("brandName").textContent = CONFIG.brandName;
+document.getElementById("ftBrand").textContent = CONFIG.brandName;
+document.getElementById("ftYear").textContent = new Date().getFullYear();
+document.getElementById("ftLine").textContent = CONFIG.LINE_ID;
+load();
+window.addEventListener("hashchange", route);
+route();
+</script>
+
+</body></html>
